@@ -1,40 +1,137 @@
-# Coding-agent-LLM-PyTorch-
-A Language model trained on python code in torch.
+# Coding Agent LLM (PyTorch)
 
-A custom language model, built from scratch, trained on Python code for code generation and error reasoning.
-Implemented tokenization, embeddings, and transformer attention in PyTorch
-Built custom training loops with loss tracking and evaluation
-Experimented with context length, learning rate, and dataset size
-Tech: Python, PyTorch, PathLib, os Module
+A lightweight, locally runnable language model trained on Python code, designed to demonstrate transformer fundamentals, training workflows, and applied machine learning engineering in PyTorch.
 
-## ------------------------------------- ##
-**Problem:**
-  - big models run on the cloud, and are usually confusing to read and inaccessible
-  - big Coding models are harder to run locally most of the time, and cannot use if there is no internet access
+This project implements a custom language model from scratch, including tokenization, embeddings, and transformer attention, with a focus on understandability, reproducibility, and local execution.
 
-## ------------------------------------- ##
-**Solutions:**
-  - small model
-  - everything runs locally, tokenizer, model, training, absolutely everything(pre-trained model is available in the repo).
-  - everything is simplfied and documented for understanding and replicatible from any machine with a capable device.
+---
 
-## ------------------------------------- ##
-**Technology Used:**
-Python, PyTorch: allow for gpu-acceleration, tensor operations, pre-built layer types such as the Linear layers. torch speeds things up by being based on lua, which can interact with Cuda through C++ and the CPU through the C programming language
-os, pathlib: used to scrape raw github repos for data and checking for file existence.
+## Problem
 
-## ------------------------------------- ##
-**Issues and their solution:**
-1. mismatching shapes when changing hyperparameters: usually deleting an old model file works, if that doesn't changing some code usually work, but more importantly certain ratios have to be true in the hyperparameters.
-2. repeating tokens: This usually stems from bad lr, no gradiant norm clipping, or not doing the masking correctly, or incorrecct data loading. those are the main issues that I identified.
-3. Loss becoming low while model doesn't improve or worsens: This seemed to appear whenever I didn't mask the sequences. I infered this happens because the model just memorizes/overfits and when new data or context is introduced it doesn't know what to do. Another thing that made this work better was the warmup learning rate which allowed the weights to stabalize more easily.
-4. During the data preperation into a txt file an issue with reading bytes occured, this was because the encoding type was not able to understand/decode them, which led to errors. The fix was using the UTF-8 encoding or detecting the OS encoding, the former worked better, and errors were ignored.
+Most modern coding language models:
+- Require cloud infrastructure
+- Are difficult to run locally
+- Are opaque and hard to understand internally
+- Depend on constant internet access
+
+This makes them inaccessible for learning, experimentation, debugging, and offline use.
+
+---
+
+## Solution
+
+This project implements a small transformer-based language model that:
+- Runs entirely locally (training and inference)
+- Includes custom tokenization, embeddings, and attention mechanisms
+- Is designed for readability and experimentation
+- Can be replicated on any machine with sufficient compute
+- Includes a pretrained model for immediate testing
+
+The goal is not state-of-the-art performance, but clear implementation and practical understanding.
+
+---
+
+## Key Features
+
+- Custom character-level tokenizer
+- Transformer-based architecture implemented from scratch
+- Training loop with loss tracking and evaluation
+- Masked attention to prevent information leakage
+- Learning rate warmup for training stability
+- Hyperparameter experimentation (context length, learning rate, dataset size)
+- Local-only execution with no external services
+
+---
+
+## Technology Used
+
+- **Python**
+- **PyTorch** – GPU acceleration, tensor operations, neural network layers
+- **os, pathlib** – filesystem access and dataset preparation
+
+---
+
+## How to Run
+
+1. Clone the repository:
+git clone https://github.com/Waelalzoub1/Coding-agent-LLM-PyTorch-
+cd Coding-agent-LLM-PyTorch-
 
 
-## ------------------------------------- ##
-**The gist of the things used to actually work:**
-1. The data_processor.py file scans a diretory for .py files and extracts the text into a txt file.
-2. main.py then builds character-level vocabulary and creates a simple encoder/decoder functions.
-3. make training samples(sliding windows), by turning all the encoded text into a long tensor and splits train/eval
-4. get_batch() returns a prompt/output duo which are just x as a list of size block_size starting from a random point and y being x shifted by one.
-5. 
+2. Install dependencies:
+pip install torch
+
+
+3. Prepare training data:
+- `data_processor.py` scans a directory of `.py` files and extracts text into a single `.txt` dataset.
+
+4. Train the model:
+python main.py
+
+
+5. Run inference:
+- A pretrained model is included in the repository for testing without retraining.
+
+---
+
+## Architecture Overview
+
+- `data_processor.py`
+- Scans directories for Python files
+- Extracts and aggregates source code into a text dataset
+
+- `main.py`
+- Builds a character-level vocabulary
+- Implements encoder/decoder mappings
+- Creates training samples using sliding windows
+- Splits data into training and evaluation sets
+- Trains the transformer model using masked attention
+
+Training samples are generated as `(x, y)` pairs, where:
+- `x` is a sequence of tokens of length `block_size`
+- `y` is the same sequence shifted by one token
+
+---
+
+## Engineering Challenges & Solutions
+
+- **Shape mismatches when changing hyperparameters**  
+Occurred when loading incompatible saved model states. Resolved by retraining or maintaining valid dimensional ratios across hyperparameters.
+
+- **Repeating tokens during generation**  
+Identified causes included learning rate instability, missing gradient norm clipping, incorrect attention masking, and flawed data loading.
+
+- **Loss decreasing without meaningful improvement**  
+Occurred due to missing sequence masking, causing memorization and overfitting. Resolved by implementing proper masking and learning rate warmup.
+
+- **Encoding errors during dataset preparation**  
+Byte decoding failures occurred when reading scraped files. Resolved by enforcing UTF-8 decoding with error handling.
+
+These issues were identified through experimentation, debugging, and iterative refinement of the training pipeline.
+
+---
+
+## Purpose of the Project
+
+This project is intended to:
+- Demonstrate applied understanding of transformer architectures
+- Show practical ML engineering and debugging skills
+- Provide a clear, readable reference for how language models work internally
+- Enable local experimentation without cloud dependencies
+
+---
+
+## Future Improvements
+
+- Token-level or subword tokenization
+- More efficient attention mechanisms
+- Evaluation metrics beyond loss
+- Inference API integration
+
+---
+
+## Author
+
+Wael Alzoubi  
+Software Developer | Python, PyTorch, FastAPI  
+GitHub: https://github.com/Waelalzoub1
